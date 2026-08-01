@@ -32,7 +32,7 @@ The goal of this project is to build a scalable, multi-tenant Applicant Tracking
 1. **Automated AI Screening Pipeline**: Uses Google Gemini to ingest PDF resumes natively. A custom prompt forces the LLM to act as a strict technical recruiter, outputting a precise JSON object containing a 1-100 match score, key strengths, missing requirements, and red flags.
 2. **Multi-Tenant Data Isolation**: Securely isolates data using Clerk authentication and Prisma. Every job and candidate is strictly tied to the `clerkUserId` of the recruiter who created it, ensuring total privacy across concurrent accounts.
 3. **SaaS Monetization Engine**: Integrates Stripe Checkout for dynamic subscription tiers (Free, Plus, Pro). A securely verified Stripe webhook listener automatically updates the user's scan limits in the Postgres database upon successful payment.
-4. **Modern, Type-Safe UI**: Built using strict TypeScript. The user interface leverages Tailwind CSS and Shadcn UI to deliver a clean, responsive, and highly accessible dashboard without heavy external component libraries.
+4. **Modern UI**: Built using robust JavaScript (ES6+). The user interface leverages Tailwind CSS and Shadcn UI to deliver a clean, responsive, and highly accessible dashboard without heavy external component libraries.
 
 ## Local Development Setup
 

@@ -4,10 +4,10 @@ import Stripe from "stripe";
 import prisma from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_dummy", {
-  apiVersion: "2024-06-20" as any,
+  apiVersion: "2024-06-20",
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   try {
     const { userId } = await auth();
 

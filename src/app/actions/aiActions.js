@@ -8,7 +8,7 @@ import { GoogleGenAI } from "@google/genai";
 // Initialize Gemini
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-export async function uploadAndAnalyzeResume(formData: FormData) {
+export async function uploadAndAnalyzeResume(formData) {
   const { userId } = await auth();
   if (!userId) {
     throw new Error("You must be logged in to upload a resume");
@@ -25,7 +25,7 @@ export async function uploadAndAnalyzeResume(formData: FormData) {
     });
   }
 
-  const limits: Record<string, number> = {
+  const limits = {
     FREE: 3,
     PLUS: 50,
     PRO: 200,
@@ -38,10 +38,10 @@ export async function uploadAndAnalyzeResume(formData: FormData) {
     );
   }
 
-  const file = formData.get("resume") as File;
-  const jobId = formData.get("jobId") as string;
-  const candidateName = formData.get("name") as string;
-  const candidateEmail = formData.get("email") as string;
+  const file = formData.get("resume");
+  const jobId = formData.get("jobId");
+  const candidateName = formData.get("name");
+  const candidateEmail = formData.get("email");
 
   if (!file || !jobId || !candidateName || !candidateEmail) {
     throw new Error("Missing required fields");
@@ -73,15 +73,20 @@ export async function uploadAndAnalyzeResume(formData: FormData) {
   `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
+    model: "gemini-2.0-flash",
     contents: [
       {
-        inlineData: {
-          data: base64Data,
-          mimeType: "application/pdf",
-        },
+        role: "user",
+        parts: [
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType: "application/pdf",
+            },
+          },
+          { text: prompt },
+        ],
       },
-      prompt,
     ],
   });
 

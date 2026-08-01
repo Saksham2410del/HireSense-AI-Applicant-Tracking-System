@@ -4,14 +4,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2024-06-20" as any,
+  apiVersion: "2024-06-20",
 });
 
-export async function POST(req: Request) {
+export async function POST(req) {
   const body = await req.text();
-  const signature = (await headers()).get("Stripe-Signature") as string;
+  const signature = (await headers()).get("Stripe-Signature");
 
-  let event: Stripe.Event;
+  let event;
 
   try {
     event = stripe.webhooks.constructEvent(
@@ -19,15 +19,15 @@ export async function POST(req: Request) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET || "",
     );
-  } catch (error: any) {
+  } catch (error) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
+  const session = event.data.object;
 
   if (event.type === "checkout.session.completed") {
     const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string,
+      session.subscription,
     );
 
     if (!session?.metadata?.clerkUserId) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       create: {
         clerkUserId: session.metadata.clerkUserId,
         stripeSubscriptionId: subscription.id,
-        stripeCustomerId: subscription.customer as string,
+        stripeCustomerId: subscription.customer,
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000,
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
       },
       update: {
         stripeSubscriptionId: subscription.id,
-        stripeCustomerId: subscription.customer as string,
+        stripeCustomerId: subscription.customer,
         stripePriceId: subscription.items.data[0].price.id,
         stripeCurrentPeriodEnd: new Date(
           subscription.current_period_end * 1000,
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
   if (event.type === "invoice.payment_succeeded") {
     const subscription = await stripe.subscriptions.retrieve(
-      session.subscription as string,
+      session.subscription,
     );
 
     await prisma.userSubscription.update({
