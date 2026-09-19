@@ -1,20 +1,11 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
-import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Building2,
-  MapPin,
-  CalendarDays,
-  ArrowRight,
-} from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-
 import { auth } from "@clerk/nextjs/server";
+import { timeAgo } from "@/lib/utils";
+import { Plus, Building, MapPin, Calendar, ArrowRight } from "@/components/icons";
 
 export default async function JobsPage() {
   const { userId } = await auth();
-  if (!userId) return null;
 
   const jobs = await prisma.job.findMany({
     where: { clerkUserId: userId },
@@ -25,40 +16,33 @@ export default async function JobsPage() {
     <div className="w-full">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            Active Jobs
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage your open positions and candidates.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Active Jobs</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage your open positions and candidates.</p>
         </div>
-        <Link href="/dashboard/jobs/new">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Create New Job
-          </Button>
+        <Link
+          href="/dashboard/jobs/new"
+          className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg px-4 py-2 shadow-sm"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create New Job
         </Link>
       </div>
 
       {jobs.length === 0 ? (
         <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm">
           <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Building2 className="w-8 h-8 text-gray-400" />
+            <Building className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            No jobs created yet
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No jobs created yet</h3>
           <p className="text-gray-500 mb-6 max-w-sm mx-auto text-sm">
-            You haven't posted any jobs yet. Create your first job posting to
-            start analyzing resumes with AI.
+            You have not posted any jobs yet. Create your first job posting to start
+            analyzing resumes with AI.
           </p>
-          <Link href="/dashboard/jobs/new">
-            <Button
-              className="bg-white border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm"
-              variant="outline"
-            >
-              Create your first job
-            </Button>
+          <Link
+            href="/dashboard/jobs/new"
+            className="inline-block bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm rounded-lg px-4 py-2 text-sm font-medium"
+          >
+            Create your first job
           </Link>
         </div>
       ) : (
@@ -77,7 +61,7 @@ export default async function JobsPage() {
 
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center text-sm text-gray-500">
-                    <Building2 className="w-4 h-4 mr-2 text-gray-400" />
+                    <Building className="w-4 h-4 mr-2 text-gray-400" />
                     <span className="line-clamp-1">{job.company}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
@@ -85,16 +69,12 @@ export default async function JobsPage() {
                     <span className="line-clamp-1">{job.location}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
-                    <CalendarDays className="w-4 h-4 mr-2 text-gray-400" />
-                    <span>
-                      {formatDistanceToNow(new Date(job.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </span>
+                    <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                    <span>{timeAgo(job.createdAt)}</span>
                   </div>
                 </div>
 
-                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
+                <div className="mt-auto pt-4 border-t border-gray-50 flex items-center">
                   <span className="text-sm font-medium text-blue-600 group-hover:text-blue-700 flex items-center">
                     View Candidates
                     <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />

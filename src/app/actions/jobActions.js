@@ -7,7 +7,6 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function createJob(formData) {
   const { userId } = await auth();
-
   if (!userId) {
     throw new Error("You must be signed in to create a job");
   }
@@ -22,13 +21,7 @@ export async function createJob(formData) {
   }
 
   await prisma.job.create({
-    data: {
-      title,
-      company,
-      location,
-      description,
-      clerkUserId: userId,
-    },
+    data: { title, company, location, description, clerkUserId: userId },
   });
 
   revalidatePath("/dashboard/jobs");
